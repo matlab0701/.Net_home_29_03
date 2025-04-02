@@ -164,6 +164,31 @@ public class ProductService : IProductService
         return new Response<string>($"Product imported successfully {counter} records");
     }
 
+        public async Task<Response<string>> AnalyzeDataAsync()
+    {
+        const string path = "C:\\Users\\user\\Desktop\\File\\add.txt";
+        const string cmdTotalProducts = "select count(*) from products";
+        const string cmdAveragePrice = "select avg(price) from products";
+        const string cmdTotalStockQuantity = "select sum(stockquantity) from products";
+
+        using var connection = await _context.GetConnection();
+
+        var totalProducts = await connection.ExecuteScalarAsync<int>(cmdTotalProducts);
+        var averagePrice = await connection.ExecuteScalarAsync<decimal>(cmdAveragePrice);
+        var totalStockQuantity = await connection.ExecuteScalarAsync<int>(cmdTotalStockQuantity);
+
+        var lines = new List<string>
+    {
+        $"Total Products: {totalProducts}",
+        $"Average Price: {averagePrice}",
+        $"Total Stock Quantity: {totalStockQuantity}"
+    };
+        await File.WriteAllLinesAsync(path, lines);
+
+        return new Response<string>("product analiz successfully");
+    }
+
+
 
 
 }
